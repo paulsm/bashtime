@@ -22,12 +22,19 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-# get the date as "hours(12) minutes" in a single call
-# make a bash array with it
-d=( $(date "+%I %M") )
-# separate hours and minutes
-hour=${d[0]}
-min=${d[1]}
+# if no args
+if [[ -z "$*" ]] ; then
+    # get the date as "hours(12) minutes" in a single call
+    # make a bash array with it
+    d=( $(date "+%I %M") )
+    # separate hours and minutes
+    hour=${d[0]}
+    min=${d[1]}
+else
+    # get the arguments passed to the script
+    hour=$1
+    min=$2
+fi
 
 # The targeted unicode characters are the "CLOCK FACE" ones
 # They are located in the codepages between:
