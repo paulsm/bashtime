@@ -1,7 +1,8 @@
 #! /bin/bash
 
 # This is bashtime.sh
-# Copyright (c) 2013 Paul Scott-Murphy
+# Copyright (c) 2013 Paul Scott-Murphy (idea, initial code)
+# Copyright (c) 2013 Johann Dreo (new code)
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
 # this software and associated documentation files (the "Software"), to deal in
@@ -21,79 +22,42 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-time=`date +%I%M`;
-if [ "$time" -lt 115 ]
-then
-    echo -n '🕐'
-elif [ "$time" -lt 145 ]
-then
-    echo -n '🕜'
-elif [ "$time" -lt 215 ]
-then
-    echo -n '🕑'
-elif [ "$time" -lt 245 ]
-then
-    echo -n '🕝'
-elif [ "$time" -lt 315 ]
-then
-    echo -n '🕒'
-elif [ "$time" -lt 345 ]
-then
-    echo -n '🕞'
-elif [ "$time" -lt 415 ]
-then
-    echo -n '🕓'
-elif [ "$time" -lt 445 ]
-then
-    echo -n '🕟'
-elif [ "$time" -lt 515 ]
-then
-    echo -n '🕔'
-elif [ "$time" -lt 545 ]
-then
-    echo -n '🕠'
-elif [ "$time" -lt 615 ]
-then
-    echo -n '🕕'
-elif [ "$time" -lt 645 ]
-then
-    echo -n '🕡'
-elif [ "$time" -lt 715 ]
-then
-    echo -n '🕖'
-elif [ "$time" -lt 745 ]
-then
-    echo -n '🕢'
-elif [ "$time" -lt 815 ]
-then
-    echo -n '🕗'
-elif [ "$time" -lt 845 ]
-then
-    echo -n '🕣'
-elif [ "$time" -lt 915 ]
-then
-    echo -n '🕘'
-elif [ "$time" -lt 945 ]
-then
-    echo -n '🕤'
-elif [ "$time" -lt 1015 ]
-then
-    echo -n '🕙'
-elif [ "$time" -lt 1045 ]
-then
-    echo -n '🕥'
-elif [ "$time" -lt 1115 ]
-then
-    echo -n '🕚'
-elif [ "$time" -lt 1145 ]
-then
-    echo -n '🕦'
-elif [ "$time" -lt 1215 ]
-then
-    echo -n '🕛'
-elif [ "$time" -lt 1300 ]
-then
-    echo -n '🕛'
-else
-    echo -n '⭕'
-fi
+# get the date as "hours(12) minutes" in a single call
+# make a bash array with it
+d=( $(date "+%I %M") )
+# separate hours and minutes
+hour=${d[0]}
+min=${d[1]}
+
+# The targeted unicode characters are the "CLOCK FACE" ones
+# They are located in the codepages between:
+#     U+1F550 (ONE OCLOCK) and U+1F55B (TWELVE OCLOCK), for the plain hours
+#     U+1F55C (ONE-THIRTY) and U+1F567 (TWELVE-THIRTY), for the thirties
+#
+# Those codes may be output with unicode escapes or hexadecimal escapes,
+# the later being the more portable.
+#
+# But we can iterate only over integers.
+#
+# We thus need the following conversion table:
+#       utf   hex   int
+# hours 50:5B 90:9b 144:155
+# half  5C:67 9c:a7 156:167
+
+# The characters being grouped bas plain/thirty, we must first now
+# if we are close to the 0 or 30 minutes.
+# Bash using integer arithmetic by default, we do not need rounding.
+# We thus add 0 (plain hour) or 12 (half).
+# Then we add 144, which is the first index (as an integer).
+mi=$((144+12*($min/30)))
+
+# Add the computed minutes index (144 or 156) minus 1 (because the first hour starts at 0).
+hi=$(($mi+$hour-1))
+
+# Get the hexadecimal representation of this integer
+hex=$(printf "%x" $hi)
+
+# Print the first three bytes (that are always the same) and the computed last one.
+# Add a space for correct alignement
+printf "\xf0\x9f\x95\x$hex "
+
