@@ -28,8 +28,8 @@ if [[ -z "$*" ]] ; then
     # make a bash array with it
     d=( $(date "+%I %M") )
     # separate hours and minutes
-    hour=${d[0]}
-    min=${d[1]}
+    hour=${d[0]#0} # remove leading 0 or values <10 will be interpreted as octal
+    min=${d[1]#0}
 else
     # get the arguments passed to the script
     hour=$1
