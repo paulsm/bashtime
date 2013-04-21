@@ -65,6 +65,5 @@ hi=$(($mi+$hour-1))
 hex=$(printf "%x" $hi)
 
 # Print the first three bytes (that are always the same) and the computed last one.
-# Add a space for correct alignement
-printf "\xf0\x9f\x95\x$hex "
+printf "\xf0\x9f\x95\x$hex"
 
